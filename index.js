@@ -1,3 +1,17 @@
+// Function 3: hourly cron job with random repeats
+const hourlyJob = inngest.createFunction(
+	{ id: "hourly-job" },
+	{ cron: "0 * * * *" }, // Runs at minute 0 of every hour
+	async ({ step }) => {
+		const count = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
+		for (let i = 0; i < count; i++) {
+			await step.run(`Send event ${i}`, async () => {
+				console.log(`Hourly job event ${i} triggered!`);
+			});
+		}
+		return { message: `Hourly job complete, ran ${count} times` };
+	}
+);
 const express = require("express");
 const { Inngest } = require("inngest");
 
@@ -29,7 +43,7 @@ const goodbyeWorld = inngest.createFunction(
 );
 
 // List your Inngest functions here
-const inngestFunctions = [helloWorld, goodbyeWorld];
+const inngestFunctions = [helloWorld, goodbyeWorld, hourlyJob];
 
 // Handle Inngest Cloud sync (PUT request)
 app.put("/api/inngest", express.json(), (req, res) => {
