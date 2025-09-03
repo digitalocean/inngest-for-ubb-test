@@ -52,16 +52,16 @@ app.put("/api/inngest", express.json(), (req, res) => {
 
 // Expose a route to receive events and trigger functions
 app.post("/api/inngest", express.json(), async (req, res) => {
-	console.log(req.body);
-	const { name, data } = req.body;
-	try {
-		for (let i = 0; i < 10; i++) {
-			await inngest.send({ name, data: { ...data, index: i } });
+		console.log(req.body);
+		const { name, data, count = 10 } = req.body; // Default to 10 if not provided
+		try {
+			for (let i = 0; i < count; i++) {
+				await inngest.send({ name, data: { ...data, index: i } });
+			}
+			res.status(200).json({ status: `${count} events sent` });
+		} catch (err) {
+			res.status(500).json({ error: err.message });
 		}
-		res.status(200).json({ status: "10 events sent" });
-	} catch (err) {
-		res.status(500).json({ error: err.message });
-	}
 });
 
 const port = process.env.PORT || 3000;
