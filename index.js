@@ -28,21 +28,35 @@ const goodbyeWorld = inngest.createFunction(
 	}
 );
 
+// List your Inngest functions here
+const inngestFunctions = [helloWorld, goodbyeWorld];
+
+// Handle Inngest Cloud sync (PUT request)
+app.put("/api/inngest", express.json(), (req, res) => {
+	// Respond with function metadata
+	const functionsMeta = inngestFunctions.map(fn => ({
+		id: fn.id,
+		name: fn.name,
+		event: fn.trigger.event,
+	}));
+	res.status(200).json({ functions: functionsMeta });
+});
+
 // Expose a route to receive events and trigger functions
 app.post("/api/inngest", express.json(), async (req, res) => {
-    console.log(req.body); // Add this line
-		const { name, data } = req.body;
-		try {
-			for (let i = 0; i < 10; i++) {
-				await inngest.send({ name, data: { ...data, index: i } });
-			}
-			res.status(200).json({ status: "10 events sent" });
-		} catch (err) {
-			res.status(500).json({ error: err.message });
+	console.log(req.body);
+	const { name, data } = req.body;
+	try {
+		for (let i = 0; i < 10; i++) {
+			await inngest.send({ name, data: { ...data, index: i } });
 		}
+		res.status(200).json({ status: "10 events sent" });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
 });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+	console.log(`Server running on http://localhost:${port}`);
 });
