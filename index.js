@@ -33,13 +33,21 @@ const inngestFunctions = [helloWorld, goodbyeWorld];
 
 // Handle Inngest Cloud sync (PUT request)
 app.put("/api/inngest", express.json(), (req, res) => {
-	// Respond with function metadata
-	const functionsMeta = inngestFunctions.map(fn => ({
-		id: fn.id,
-		name: fn.name,
-		event: fn.trigger.event,
-	}));
-	res.status(200).json({ functions: functionsMeta });
+		try {
+			console.log("Sync request received");
+			console.log("Functions:", inngestFunctions);
+
+			const functionsMeta = inngestFunctions.map(fn => ({
+				id: fn.id || fn._id || "unknown",
+				name: fn.name || "unknown",
+				event: fn.trigger?.event || "unknown"
+			}));
+
+			res.status(200).json({ functions: functionsMeta });
+		} catch (err) {
+			console.error("Error in PUT /api/inngest:", err);
+			res.status(500).json({ error: err.message });
+		}
 });
 
 // Expose a route to receive events and trigger functions
