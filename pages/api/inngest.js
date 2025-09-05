@@ -32,12 +32,13 @@ const hourlyJob = inngest.createFunction(
   async ({ step }) => {
     const count = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
     for (let i = 0; i < count; i++) {
-      await step.run(`Send event ${i}`, async () => {
-        console.log(`Hourly job event ${i} triggered!`);
-      });
+      await step.run(`Send event ${i}`);
     }
     return { message: `Hourly job complete, ran ${count} times` };
   }
 );
 
-export default serve(inngest, [helloWorld, goodbyeWorld, hourlyJob]);
+export default serve({
+  client: inngest,
+  functions: [helloWorld, goodbyeWorld, hourlyJob],
+});
