@@ -29,12 +29,14 @@ const goodbyeWorld = inngest.createFunction(
 const hourlyJob = inngest.createFunction(
   { id: "hourly-job" },
   { cron: "0 * * * *" },
-  async ({ step }) => {
+  async ({ step, client }) => {
     const count = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
-    for (let i = 0; i < count; i++) {
-      await step.run(`Send event ${i}`);
-    }
-    return { message: `Hourly job complete, ran ${count} times` };
+    await step.run("Send many events", async () => {
+      for (let i = 0; i < count; i++) {
+        await client.send("app/hello", { data: { index: i } });
+      }
+    });
+    return { message: `Hourly job complete, sent ${count} events` };
   }
 );
 
