@@ -30,7 +30,7 @@ const hourlyJob = inngest.createFunction(
   { id: "hourly-job" },
   { cron: "0 * * * *" },
   async ({ step, client }) => {
-    const count = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
+    const count = parseInt(process.env.EVENT_COUNT, 10) || 1000;
     await step.run("Send many events", async () => {
       for (let i = 0; i < count; i++) {
         await client.send("app/hello", { data: { index: i } });
