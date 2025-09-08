@@ -33,7 +33,7 @@ const hourlyJob = inngest.createFunction(
     const count = parseInt(process.env.EVENT_COUNT, 10) || 1000;
     await step.run("Send many events", async () => {
       for (let i = 0; i < count; i++) {
-        await inngest.send("app/hello", { data: { index: i } });
+        await inngest.send({ name: "app/hello", data: { index: i } });
       }
     });
     return { message: `Hourly job complete, sent ${count} events` };
