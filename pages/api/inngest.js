@@ -31,12 +31,17 @@ const hourlyJob = inngest.createFunction(
   { cron: "0 * * * *" },
   async ({ step }) => {
     const count = parseInt(process.env.EVENT_COUNT, 10) || 1000;
-    await step.run("Send many events", async () => {
+    await step.run("Send hello events", async () => {
       for (let i = 0; i < count; i++) {
         await inngest.send({ name: "app/hello", data: { index: i } });
       }
     });
-    return { message: `Hourly job complete, sent ${count} events` };
+    await step.run("Send goodbye events", async () => {
+      for (let i = 0; i < count; i++) {
+        await inngest.send({ name: "app/goodbye", data: { index: i } });
+      }
+    });
+    return { message: `Hourly job complete, sent ${count} hello and goodbye events` };
   }
 );
 
